@@ -1,0 +1,6 @@
+theme = TokyoNight
+window-padding-x = 6
+
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
