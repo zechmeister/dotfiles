@@ -1,5 +1,9 @@
-theme = TokyoNight
+theme = Rose Pine Dawn
 window-padding-x = 6
+
+font-family = ""
+font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 15
 
 cursor-style = block
 cursor-style-blink = false
