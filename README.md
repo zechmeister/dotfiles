@@ -18,6 +18,7 @@ brew bundle
 ln -sf $PWD/Brewfile ~/Brewfile
 ln -sf $PWD/.config/ghostty ~/.config/ghostty
 ln -sf $PWD/.config/tmux ~/.config/tmux
+ln -sf $PWD/.config/scripts ~/.config/scripts
 ```
 
 **Note**: Symlinking the Brewfile to `~/Brewfile` allows you to run `brew bundle` from anywhere without specifying the file path.
