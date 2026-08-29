@@ -1,5 +1,6 @@
 [keys]
 prefix = "ctrl+w"
+next_agent = "prefix+o"
 navigate_workspace_down = "j"
 navigate_workspace_up = "k"
 navigate_pane_down = "down"
