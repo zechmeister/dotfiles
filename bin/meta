@@ -21,8 +21,14 @@ if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr st
         pane_id=$(echo "$create_res" | jq -r '.result.root_pane.pane_id')
 
         if [[ -n "$pane_id" && "$pane_id" != "null" ]]; then
-            herdr agent start meta --kind pi --pane "$pane_id"
-            echo "✓ Meta workspace created and Pi agent started ($pane_id)."
+            herdr agent start meta --kind pi --pane "$pane_id" -- \
+                @AGENTS.md \
+                @Brewfile \
+                @.config/herdr/config.toml \
+                @.config/ghostty/config \
+                @.config/pi/settings.json \
+                @.config/.zshrc
+            echo "✓ Meta workspace created and Pi agent started with repo context ($pane_id)."
         else
             echo "✓ Meta workspace created."
         fi
@@ -31,5 +37,11 @@ else
     # Fallback if Herdr is not active
     echo "Herdr not running. Launching Pi in $DOTFILES_DIR..."
     cd "$DOTFILES_DIR"
-    exec pi
+    exec pi \
+        @AGENTS.md \
+        @Brewfile \
+        @.config/herdr/config.toml \
+        @.config/ghostty/config \
+        @.config/pi/settings.json \
+        @.config/.zshrc
 fi
