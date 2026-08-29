@@ -30,7 +30,13 @@ ln -sf $PWD/bin/gh-open ~/bin/gh-open
 ln -sf $PWD/bin/meta ~/bin/meta
 ```
 
-### 3. Remove Dock (macOS)
+### 3. Install Herdr Agent Integration
+
+```bash
+herdr integration install pi
+```
+
+### 4. Remove Dock (macOS)
 
 ```bash
 defaults write com.apple.dock autohide-delay -float 1000 && killall Dock
