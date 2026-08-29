@@ -21,6 +21,7 @@ ln -sf $PWD/.config/ghostty ~/.config/ghostty
 ln -sf $PWD/.config/herdr/config.toml ~/.config/herdr/config.toml
 ln -sf $PWD/.config/nvim ~/.config/nvim
 ln -sf $PWD/.config/pi/settings.json ~/.pi/agent/settings.json
+ln -sf $PWD/.config/pi/APPEND_SYSTEM.md ~/.pi/agent/APPEND_SYSTEM.md
 ln -sf $PWD/.config/.zshrc ~/.zshrc
 
 # CLI Tools
