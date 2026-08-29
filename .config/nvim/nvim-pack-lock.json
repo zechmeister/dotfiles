@@ -1,0 +1,49 @@
+{
+  "plugins": {
+    "blink.cmp": {
+      "rev": "d93e01a",
+      "src": "https://github.com/saghen/blink.cmp"
+    },
+    "bluloco.nvim": {
+      "rev": "afc95b6",
+      "src": "https://github.com/uloco/bluloco.nvim"
+    },
+    "conform.nvim": [],
+    "gitsigns.nvim": {
+      "rev": "20ad441",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
+    "kanagawa.nvim": {
+      "rev": "aef7f5c",
+      "src": "https://github.com/rebelot/kanagawa.nvim"
+    },
+    "lush.nvim": {
+      "rev": "9c60ec2",
+      "src": "https://github.com/rktjmp/lush.nvim"
+    },
+    "nvim-lspconfig": {
+      "rev": "e5c61b0",
+      "src": "https://github.com/neovim/nvim-lspconfig"
+    },
+    "plenary.nvim": {
+      "rev": "b9fd522",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "rose-pine": {
+      "rev": "72a04c4",
+      "src": "https://github.com/rose-pine/neovim"
+    },
+    "telescope.nvim": {
+      "rev": "b4da76b",
+      "src": "https://github.com/nvim-telescope/telescope.nvim"
+    },
+    "tokyonight.nvim": {
+      "rev": "8734a4e",
+      "src": "https://github.com/folke/tokyonight.nvim"
+    },
+    "typescript-tools.nvim": {
+      "rev": "bf11d98",
+      "src": "https://github.com/pmizio/typescript-tools.nvim"
+    }
+  }
+}

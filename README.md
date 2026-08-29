@@ -19,6 +19,7 @@ ln -sf $PWD/Brewfile ~/Brewfile
 # Configs
 ln -sf $PWD/.config/ghostty ~/.config/ghostty
 ln -sf $PWD/.config/herdr/config.toml ~/.config/herdr/config.toml
+ln -sf $PWD/.config/nvim ~/.config/nvim
 ln -sf $PWD/.config/pi/settings.json ~/.pi/agent/settings.json
 ln -sf $PWD/.config/.zshrc ~/.zshrc
 

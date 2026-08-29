@@ -34,6 +34,7 @@ You are the system architect and workflow optimizer for this machine. Your role 
 | Tool | Repo Location | Symlink Target | Reload / Verify Command |
 | :--- | :--- | :--- | :--- |
 | **Herdr** | `.config/herdr/config.toml` | `~/.config/herdr/config.toml` | `herdr config check && herdr server reload-config` |
+| **Neovim** | `.config/nvim/` | `~/.config/nvim` | Open Neovim |
 | **Ghostty** | `.config/ghostty/config` | `~/.config/ghostty/config` | Auto-reloads on file write |
 | **Pi Coding Agent** | `.config/pi/` | `~/.pi/agent/settings.json`, `keybindings.json` | `/reload` in Pi |
 | **Zsh** | `.config/.zshrc` | `~/.zshrc` | `source ~/.zshrc` |
