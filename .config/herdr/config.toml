@@ -1,2 +1,5 @@
 [keys]
 prefix = "ctrl+w"
+
+[ui]
+agent_panel_sort = "spaces"
