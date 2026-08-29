@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# meta: Jump to or spin up the 'meta' system architect space in Herdr
+
+set -euo pipefail
+
+DOTFILES_DIR="$HOME/projects/dotfiles"
+
+# Check if Herdr is available
+if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr status server >/dev/null 2>&1; }; then
+    # Query existing workspaces
+    ws_list=$(herdr workspace list 2>/dev/null || true)
+    
+    meta_ws_id=$(echo "$ws_list" | jq -r '.result.workspaces[]? | select(.label == "meta") | .workspace_id' 2>/dev/null | head -n 1)
+
+    if [[ -n "$meta_ws_id" && "$meta_ws_id" != "null" ]]; then
+        herdr workspace focus "$meta_ws_id"
+        echo "✓ Switched to meta workspace ($meta_ws_id)"
+    else
+        echo "Creating meta workspace in $DOTFILES_DIR..."
+        create_res=$(herdr workspace create --label "meta" --cwd "$DOTFILES_DIR" --focus)
+        pane_id=$(echo "$create_res" | jq -r '.result.root_pane.pane_id')
+
+        if [[ -n "$pane_id" && "$pane_id" != "null" ]]; then
+            herdr agent start meta --kind pi --pane "$pane_id"
+            echo "✓ Meta workspace created and Pi agent started ($pane_id)."
+        else
+            echo "✓ Meta workspace created."
+        fi
+    fi
+else
+    # Fallback if Herdr is not active
+    echo "Herdr not running. Launching Pi in $DOTFILES_DIR..."
+    cd "$DOTFILES_DIR"
+    exec pi
+fi

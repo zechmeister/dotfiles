@@ -1,29 +1,35 @@
 # Dotfiles
 
-Central source of truth for configuration files. Files live here and are symlinked to their expected locations.
+Central source of truth for configuration files, tools, and system architecture.
 
 ## Setup
 
-### Install Homebrew packages
+### 1. Install Homebrew Packages
 
 ```bash
 brew bundle
 ```
 
-### Create symlinks
-
-**Note**: `-sf` will overwrite existing files.
+### 2. Create Symlinks
 
 ```bash
+# Brewfile
 ln -sf $PWD/Brewfile ~/Brewfile
+
+# Configs
 ln -sf $PWD/.config/ghostty ~/.config/ghostty
-ln -sf $PWD/.config/tmux ~/.config/tmux
-ln -sf $PWD/.config/scripts ~/.config/scripts
+ln -sf $PWD/.config/herdr/config.toml ~/.config/herdr/config.toml
+ln -sf $PWD/.config/pi/settings.json ~/.pi/agent/settings.json
+ln -sf $PWD/.config/.zshrc ~/.zshrc
+
+# CLI Tools
+mkdir -p ~/bin
+ln -sf $PWD/bin/gh-open ~/bin/gh-open
+ln -sf $PWD/bin/meta ~/bin/meta
 ```
 
-**Note**: Symlinking the Brewfile to `~/Brewfile` allows you to run `brew bundle` from anywhere without specifying the file path.
+### 3. Remove Dock (macOS)
 
-### Remove Dock
 ```bash
 defaults write com.apple.dock autohide-delay -float 1000 && killall Dock
 ```
