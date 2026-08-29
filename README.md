@@ -1,6 +1,6 @@
 # Dotfiles
 
-Central source of truth for configuration files, tools, and system architecture.
+Central source of truth for configuration files.
 
 ## Setup
 
