@@ -4,7 +4,6 @@
   "defaultProvider": "openrouter",
   "defaultModel": "google/gemini-3.7-flash",
   "enabledModels": [
-    "openrouter/google/gemini-3.7-flash",
-    "openrouter/moonshotai/kimi-k2.6"
+    "openrouter/google/gemini-3.7-flash"
   ]
 }
