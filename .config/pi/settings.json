@@ -2,6 +2,5 @@
   "lastChangelogVersion": "0.84.4",
   "theme": "dark",
   "defaultProvider": "openrouter",
-  "defaultModel": "moonshotai/kimi-k2.6",
-  "packages": ["npm:@ogulcancelik/pi-herdr"]
+  "defaultModel": "moonshotai/kimi-k2.6"
 }
