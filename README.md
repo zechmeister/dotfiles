@@ -23,6 +23,7 @@ ln -sf $PWD/.config/nvim ~/.config/nvim
 ln -sf $PWD/.config/pi/settings.json ~/.pi/agent/settings.json
 ln -sf $PWD/.config/pi/APPEND_SYSTEM.md ~/.pi/agent/APPEND_SYSTEM.md
 ln -sf $PWD/.config/pi/extensions ~/.pi/agent/extensions
+ln -sf $PWD/.config/pi/skills ~/.pi/agent/skills
 ln -sf $PWD/.config/.zshrc ~/.zshrc
 
 # CLI Tools
