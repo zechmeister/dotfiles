@@ -2,5 +2,9 @@
   "lastChangelogVersion": "0.84.4",
   "theme": "dark",
   "defaultProvider": "openrouter",
-  "defaultModel": "moonshotai/kimi-k2.6"
+  "defaultModel": "google/gemini-3.7-flash",
+  "enabledModels": [
+    "openrouter/google/gemini-3.7-flash",
+    "openrouter/moonshotai/kimi-k2.6"
+  ]
 }
