@@ -5,6 +5,15 @@ set -euo pipefail
 
 DOTFILES_DIR="$HOME/projects/dotfiles"
 
+AGENT_ARGS=(
+    @Brewfile
+    @.config/herdr/config.toml
+    @.config/ghostty/config
+    @.config/pi/settings.json
+    @.config/.zshrc
+    "Meta workspace initialized. System maintainer ready."
+)
+
 # Check if Herdr is available
 if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr status server >/dev/null 2>&1; }; then
     # Query existing workspaces
@@ -21,13 +30,7 @@ if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr st
         pane_id=$(echo "$create_res" | jq -r '.result.root_pane.pane_id')
 
         if [[ -n "$pane_id" && "$pane_id" != "null" ]]; then
-            herdr agent start meta --kind pi --pane "$pane_id" -- \
-                @Brewfile \
-                @.config/herdr/config.toml \
-                @.config/ghostty/config \
-                @.config/pi/settings.json \
-                @.config/.zshrc \
-                "Meta workspace initialized. System maintainer ready."
+            herdr agent start meta --kind pi --pane "$pane_id" -- "${AGENT_ARGS[@]}"
             echo "✓ Meta workspace created and Pi agent started with repo context ($pane_id)."
         else
             echo "✓ Meta workspace created."
@@ -37,11 +40,5 @@ else
     # Fallback if Herdr is not active
     echo "Herdr not running. Launching Pi in $DOTFILES_DIR..."
     cd "$DOTFILES_DIR"
-    exec pi \
-        @Brewfile \
-        @.config/herdr/config.toml \
-        @.config/ghostty/config \
-        @.config/pi/settings.json \
-        @.config/.zshrc \
-        "Meta space initialized. System maintainer ready."
+    exec pi "${AGENT_ARGS[@]}"
 fi
