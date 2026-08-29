@@ -1,0 +1,29 @@
+{
+  "alwaysThinkingEnabled": true,
+  "theme": "dark-daltonized",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/florian/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "enableArtifact": false,
+  "disabledBuiltinTools": [
+    "AskUserQuestion"
+  ],
+  "disableWorkflows": true,
+  "skillOverrides": {
+    "design": "off",
+    "artifact-design": "off",
+    "artifact-diagramming": "off",
+    "artifact-capabilities": "off"
+  }
+}
