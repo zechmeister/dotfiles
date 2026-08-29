@@ -1,0 +1,1 @@
+- Always create atomic commits focusing on a single logical change. Never combine unrelated changes or use "and" in commit messages.
