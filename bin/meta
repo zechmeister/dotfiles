@@ -30,6 +30,8 @@ if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr st
         pane_id=$(echo "$create_res" | jq -r '.result.root_pane.pane_id')
 
         if [[ -n "$pane_id" && "$pane_id" != "null" ]]; then
+            # Wait for the shell in the new pane to be ready before starting Pi
+            herdr pane wait-output "$pane_id" --regex "➜|%|\\$|#" --timeout 5000 >/dev/null 2>&1 || sleep 1
             herdr agent start meta --kind pi --pane "$pane_id" -- "${AGENT_ARGS[@]}"
             echo "✓ Meta workspace created and Pi agent started with repo context ($pane_id)."
         else
