@@ -1,0 +1,68 @@
+#!/bin/sh
+
+set -e
+
+arg="$1"
+if [ -z "$arg" ]; then
+  echo "Usage: tree <branch-name | pr-number>"
+  exit 1
+fi
+
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || {
+  echo "Not inside a git repository."
+  exit 1
+}
+
+repo_name=$(basename "$repo_root")
+
+case "$arg" in
+  *[!0-9]*)
+    worktree_path="$repo_root/../${repo_name}-worktrees/$arg"
+    if ! git show-ref --quiet "refs/heads/$arg"; then
+      echo "Branch '$arg' doesn't exist. Creating from HEAD..."
+      git branch "$arg"
+    fi
+    echo "Creating worktree at $worktree_path..."
+    git worktree add "$worktree_path" "$arg"
+    ;;
+  *)
+    origin_slug=$(git remote get-url origin | sed -E 's#(git@[^:]+:|https?://[^/]+/)##; s#\.git$##')
+    worktree_path="$repo_root/../${repo_name}-worktrees/pr-$arg"
+    echo "Creating worktree at $worktree_path..."
+    git worktree add --detach "$worktree_path"
+    echo "Checking out PR #$arg from $origin_slug via gh (real branch + push config)..."
+    ( cd "$worktree_path" && gh pr checkout "$arg" --repo "$origin_slug" )
+    ;;
+esac
+
+git pack-refs --all
+
+if [ -f "$repo_root/.worktreeinclude" ]; then
+  while IFS= read -r path || [ -n "$path" ]; do
+    case "$path" in
+      ''|\#*) continue ;;
+    esac
+    path=${path%/}
+    path=${path%/\*\*}
+    path=${path%/\*}
+    src="$repo_root/$path"
+    if [ -d "$src" ]; then
+      echo "Copying $path/ to worktree..."
+      mkdir -p "$worktree_path/$path"
+      cp -R "$src/." "$worktree_path/$path/"
+    elif [ -e "$src" ]; then
+      echo "Copying $path to worktree..."
+      mkdir -p "$worktree_path/$(dirname "$path")"
+      cp -R "$src" "$worktree_path/$path"
+    fi
+  done < "$repo_root/.worktreeinclude"
+fi
+
+# Open in Herdr workspace if running in or connected to Herdr
+if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr status server >/dev/null 2>&1; }; then
+  echo "Opening Herdr workspace '$arg'..."
+  herdr workspace create --label "$arg" --cwd "$worktree_path" --focus
+else
+  cd "$worktree_path"
+  exec "${SHELL:-/bin/sh}"
+fi
