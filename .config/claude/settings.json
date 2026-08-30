@@ -1,6 +1,10 @@
 {
-  "alwaysThinkingEnabled": true,
-  "theme": "dark-daltonized",
+  "skillOverrides": {
+    "design": "off",
+    "artifact-design": "off",
+    "artifact-diagramming": "off",
+    "artifact-capabilities": "off"
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -12,18 +16,32 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/flo/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
       }
     ]
   },
-  "enableArtifact": false,
-  "disabledBuiltinTools": [
-    "AskUserQuestion"
-  ],
   "disableWorkflows": true,
-  "skillOverrides": {
-    "design": "off",
-    "artifact-design": "off",
-    "artifact-diagramming": "off",
-    "artifact-capabilities": "off"
-  }
+  "enableArtifact": false,
+  "alwaysThinkingEnabled": true,
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  },
+  "theme": "dark-daltonized",
+  "permissions": {
+    "deny": [
+      "AskUserQuestion"
+    ]
+  },
+  "model": "claude-fable-5[1m]"
 }
