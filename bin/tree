@@ -28,10 +28,27 @@ case "$arg" in
   *)
     origin_slug=$(git remote get-url origin | sed -E 's#(git@[^:]+:|https?://[^/]+/)##; s#\.git$##')
     worktree_path="$repo_root/../${repo_name}-worktrees/pr-$arg"
+    
+    echo "Fetching latest objects from origin..."
+    git fetch origin
+
+    # If a stale worktree directory exists from a prior failed run, clean it up
+    if [ -d "$worktree_path" ]; then
+      echo "Cleaning up existing worktree path at $worktree_path..."
+      git worktree remove --force "$worktree_path" 2>/dev/null || rm -rf "$worktree_path"
+      git worktree prune
+    fi
+
     echo "Creating worktree at $worktree_path..."
     git worktree add --detach "$worktree_path"
+    
     echo "Checking out PR #$arg from $origin_slug via gh (real branch + push config)..."
-    ( cd "$worktree_path" && gh pr checkout "$arg" --repo "$origin_slug" )
+    if ! ( cd "$worktree_path" && gh pr checkout "$arg" --repo "$origin_slug" ); then
+      echo "Failed to checkout PR #$arg. Cleaning up worktree..."
+      git worktree remove --force "$worktree_path" 2>/dev/null || rm -rf "$worktree_path"
+      git worktree prune
+      exit 1
+    fi
     ;;
 esac
 
