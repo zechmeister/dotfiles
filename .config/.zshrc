@@ -108,31 +108,68 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 alias vim="nvim"
+alias tf="tofu"
+alias p="pnpm"
 
 # Git 
 alias gs="git status"
 alias gpa="git pull --autostash"
 
-# terraform
-alias tf="terraform"
-
 # custom tools
 export PATH="$HOME/bin:$PATH"
 
 # pyenv
-eval "$(pyenv init -)" 
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+  if which pyenv-virtualenv-init > /dev/null 2>&1; then eval "$(pyenv virtualenv-init -)"; fi
+fi
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/florian/projects/tf-gcp/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/florian/projects/tf-gcp/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/projects/tf-gcp/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/projects/tf-gcp/google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/florian/projects/tf-gcp/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/florian/projects/tf-gcp/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$HOME/projects/tf-gcp/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/projects/tf-gcp/google-cloud-sdk/completion.zsh.inc"; fi
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
 eval "$(zoxide init zsh)"
+
+sshfresh() {
+  ssh-keygen -R "[$1]:2148" 2>/dev/null
+  ssh -p 2148 ops@"$1"
+}
+
+sshconf() {
+  local infra="$HOME/ffy/infrastructure/environments"
+  local conf="$HOME/.ssh/config.d/swarm.conf"
+  mkdir -p "$HOME/.ssh/config.d"
+
+  if [ ! -f "$HOME/.ssh/config" ] || ! grep -q 'Include config.d/\*' "$HOME/.ssh/config"; then
+    printf 'Include config.d/*\n\n' | cat - "$HOME/.ssh/config" 2>/dev/null > "$HOME/.ssh/config.tmp" \
+      && mv "$HOME/.ssh/config.tmp" "$HOME/.ssh/config" \
+      || printf 'Include config.d/*\n' > "$HOME/.ssh/config"
+  fi
+
+  : > "$conf"
+  for env in dev hal prod mgmt; do
+    local dir="$infra/$env"
+    [ -d "$dir" ] || continue
+    local mgr_ip worker_ip
+    mgr_ip=$(tofu -chdir="$dir" output -raw manager_ip 2>/dev/null)
+    worker_ip=$(tofu -chdir="$dir" output -raw worker_ip 2>/dev/null)
+    if [ -n "$mgr_ip" ] && [ "$mgr_ip" != "null" ]; then
+      printf 'Host %sm\n    HostName %s\n    Port 2148\n    User ops\n\n' "$env" "$mgr_ip" >> "$conf"
+    fi
+    if [ -n "$worker_ip" ] && [ "$worker_ip" != "null" ]; then
+      printf 'Host %sw\n    HostName %s\n    Port 2148\n    User ops\n\n' "$env" "$worker_ip" >> "$conf"
+    fi
+  done
+  echo "Wrote $(grep -c '^Host ' "$conf") hosts to $conf"
+}
+
+export PATH="/opt/homebrew/opt/libpq/bin:$HOME/.local/bin:$PATH"
+eval "$(direnv hook zsh)"
