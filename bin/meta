@@ -10,7 +10,6 @@ AGENT_ARGS=(
     @.config/herdr/config.toml
     @.config/ghostty/config
     @.config/pi/settings.json
-    @.config/pi/keybindings.json
     @.config/.zshrc
     "Meta workspace initialized. System maintainer ready."
 )
