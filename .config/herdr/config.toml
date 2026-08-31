@@ -1,5 +1,8 @@
+onboarding = false
+
 [keys]
 prefix = "ctrl+w"
+copy_mode = "prefix+y"
 next_agent = "prefix+o"
 navigate_workspace_down = "j"
 navigate_workspace_up = "k"
