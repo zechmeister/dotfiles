@@ -38,6 +38,9 @@
     }
   },
   "theme": "dark-daltonized",
+  "skills": [
+    "~/.agents/skills"
+  ],
   "permissions": {
     "deny": [
       "AskUserQuestion"

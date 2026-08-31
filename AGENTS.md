@@ -59,7 +59,9 @@ You are the development environment assistant and maintainer for this machine. Y
 | **Herdr** | `.config/herdr/config.toml` | `~/.config/herdr/config.toml` | `herdr config check && herdr server reload-config` |
 | **Neovim** | `.config/nvim/` | `~/.config/nvim` | Open Neovim |
 | **Ghostty** | `.config/ghostty/config` | `~/.config/ghostty/config` | Auto-reloads on file write |
-| **Pi Coding Agent** | `.config/pi/` | `~/.pi/agent/settings.json`, `keybindings.json` | `/reload` in Pi |
+| **Pi Coding Agent** | `.config/pi/` | `~/.pi/agent/settings.json`, `APPEND_SYSTEM.md`, `extensions`, `skills` | `/reload` in Pi |
+| **Claude Code** | `.config/claude/` | `~/.claude/settings.json`, `skills` | Next session |
+| **Shared Skills** | `skills/` | `~/.agents/skills` | Available across Pi, Claude Code, and standard agents |
 | **Zsh** | `.config/.zshrc` | `~/.zshrc` | `source ~/.zshrc` |
 | **CLI Binaries** | `bin/*` | `~/bin/*` | Immediate in `$PATH` (`~/bin`) |
 
