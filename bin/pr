@@ -1,18 +1,120 @@
 #!/usr/bin/env bash
-# pr: Open GitHub PR creation page for the current (or specified) branch in Google Chrome
+# pr: Open GitHub PR creation page with optional title & description in Google Chrome
 
 set -euo pipefail
+
+show_help() {
+    cat <<'EOF'
+Usage: pr [options] [branch]
+
+Options:
+  -t, --title <text>       Set PR title
+  -b, --body <text>        Set PR description / body (pass '-' to read from stdin)
+  -B, --branch <name>      Explicit branch name (defaults to current git branch)
+  -m, --message <text>     Set title (first line) and body (remaining lines)
+  -F, --body-file <file>   Read description from file (or '-' for stdin)
+  -f, --fill               Autofill title & description from the latest commit
+  -h, --help               Show this help message
+
+Examples:
+  pr -t "feat: add oauth" -b "Summary of changes:\n- Added OAuth provider\n- Updated docs"
+  pr -t "fix: race condition" << 'EOF'
+  ### Changes
+  - Synchronize buffer access across threads
+  EOF
+  pr -b "$(cat notes.md)"
+  pr -f
+EOF
+}
+
+branch=""
+title=""
+body=""
+fill=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -t|--title)
+            title="$2"
+            shift 2
+            ;;
+        -b|--body)
+            if [[ "$2" == "-" ]]; then
+                body=$(cat)
+            else
+                body="$2"
+            fi
+            shift 2
+            ;;
+        -B|--branch)
+            branch="$2"
+            shift 2
+            ;;
+        -m|--message)
+            msg="$2"
+            title=$(echo "$msg" | head -n1)
+            body=$(echo "$msg" | tail -n +2 | sed -e '1{/^$/d;}')
+            shift 2
+            ;;
+        -F|--body-file)
+            if [[ "$2" == "-" ]]; then
+                body=$(cat)
+            else
+                if [[ ! -f "$2" ]]; then
+                    echo "Error: File not found: $2" >&2
+                    exit 1
+                fi
+                body=$(cat "$2")
+            fi
+            shift 2
+            ;;
+        -f|--fill)
+            fill=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            show_help >&2
+            exit 1
+            ;;
+        *)
+            if [[ -z "$branch" ]]; then
+                branch="$1"
+            fi
+            shift
+            ;;
+    esac
+done
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "Error: Not a git repository ($PWD)" >&2
     exit 1
 fi
 
-branch="${1:-$(git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || true)}"
+if [[ -z "$body" && ! -t 0 ]]; then
+    body=$(cat)
+fi
+
+if [[ -z "$branch" ]]; then
+    branch=$(git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+fi
 
 if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
     echo "Error: Not currently on a valid git branch (detached HEAD)." >&2
     exit 1
+fi
+
+if [[ "$fill" == true ]]; then
+    if [[ -z "$title" ]]; then
+        title=$(git log -1 --pretty=%s 2>/dev/null || true)
+    fi
+    if [[ -z "$body" ]]; then
+        body=$(git log -1 --pretty=%b 2>/dev/null || true)
+    fi
 fi
 
 remote_url=$(git remote get-url origin 2>/dev/null || git remote get-url "$(git remote | head -n1)" 2>/dev/null || true)
@@ -33,20 +135,36 @@ elif [[ "$url" == ssh://git@* ]]; then
     url="https://$url"
 fi
 
-# Strip user authentication from HTTP(S) URLs (e.g. https://token@github.com/...)
+# Strip user authentication from HTTP(S) URLs
 url=$(echo "$url" | sed -E 's#https?://[^@]+@#https://#')
 
 # Strip trailing .git suffix
 url="${url%.git}"
 
-# Construct PR URL based on host
+query_params=()
+if [[ -n "$title" ]]; then
+    encoded_title=$(jq -rn --arg v "$title" '$v|@uri')
+    query_params+=("title=${encoded_title}")
+fi
+if [[ -n "$body" ]]; then
+    encoded_body=$(jq -rn --arg v "$body" '$v|@uri')
+    query_params+=("body=${encoded_body}")
+fi
+
 if [[ "$url" == *gitlab* ]]; then
     pr_url="${url}/-/merge_requests/new?merge_request%5Bsource_branch%5D=${branch}"
+    [[ -n "$title" ]] && pr_url="${pr_url}&merge_request%5Btitle%5D=$(jq -rn --arg v "$title" '$v|@uri')"
+    [[ -n "$body" ]] && pr_url="${pr_url}&merge_request%5Bdescription%5D=$(jq -rn --arg v "$body" '$v|@uri')"
 elif [[ "$url" == *bitbucket* ]]; then
     pr_url="${url}/pull-requests/new?source=${branch}"
 else
-    # Default: GitHub
-    pr_url="${url}/pull/new/${branch}"
+    # GitHub: use compare with expand=1 when parameters are provided to pre-fill the form
+    if [[ ${#query_params[@]} -gt 0 ]]; then
+        query_string=$(IFS='&'; echo "${query_params[*]}")
+        pr_url="${url}/compare/${branch}?expand=1&${query_string}"
+    else
+        pr_url="${url}/pull/new/${branch}"
+    fi
 fi
 
 echo "Opening PR creation for '${branch}' in Chrome: ${pr_url}"
