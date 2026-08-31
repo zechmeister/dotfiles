@@ -10,24 +10,26 @@ Usage: pr [options] [branch]
 Options:
   -t, --title <text>       Set PR title
   -b, --body <text>        Set PR description / body (pass '-' to read from stdin)
-  -B, --branch <name>      Explicit branch name (defaults to current git branch)
+  -B, --base <name>        Base branch to merge into (e.g. 'main', 'develop')
+  -H, --head <name>        Head branch containing commits (defaults to current git branch)
+      --branch <name>      Alias for --head
   -m, --message <text>     Set title (first line) and body (remaining lines)
   -F, --body-file <file>   Read description from file (or '-' for stdin)
   -f, --fill               Autofill title & description from the latest commit
   -h, --help               Show this help message
 
 Examples:
-  pr -t "feat: add oauth" -b "Summary of changes:\n- Added OAuth provider\n- Updated docs"
-  pr -t "fix: race condition" << 'EOF'
+  pr -B develop -t "feat: add oauth" -b "Summary of changes"
+  pr -B main -t "fix: race condition" << 'EOF'
   ### Changes
   - Synchronize buffer access across threads
   EOF
-  pr -b "$(cat notes.md)"
-  pr -f
+  pr -f -B staging
 EOF
 }
 
 branch=""
+base=""
 title=""
 body=""
 fill=false
@@ -46,7 +48,11 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 2
             ;;
-        -B|--branch)
+        -B|--base)
+            base="$2"
+            shift 2
+            ;;
+        -H|--head|--branch)
             branch="$2"
             shift 2
             ;;
@@ -153,21 +159,34 @@ fi
 
 if [[ "$url" == *gitlab* ]]; then
     pr_url="${url}/-/merge_requests/new?merge_request%5Bsource_branch%5D=${branch}"
+    [[ -n "$base" ]] && pr_url="${pr_url}&merge_request%5Btarget_branch%5D=$(jq -rn --arg v "$base" '$v|@uri')"
     [[ -n "$title" ]] && pr_url="${pr_url}&merge_request%5Btitle%5D=$(jq -rn --arg v "$title" '$v|@uri')"
     [[ -n "$body" ]] && pr_url="${pr_url}&merge_request%5Bdescription%5D=$(jq -rn --arg v "$body" '$v|@uri')"
 elif [[ "$url" == *bitbucket* ]]; then
     pr_url="${url}/pull-requests/new?source=${branch}"
+    [[ -n "$base" ]] && pr_url="${pr_url}&dest=$(jq -rn --arg v "$base" '$v|@uri')"
 else
-    # GitHub: use compare with expand=1 when parameters are provided to pre-fill the form
+    # GitHub: compare/<base>...<head>?expand=1 or compare/<head>?expand=1
+    target_ref="${branch}"
+    if [[ -n "$base" ]]; then
+        target_ref="${base}...${branch}"
+    fi
+
     if [[ ${#query_params[@]} -gt 0 ]]; then
         query_string=$(IFS='&'; echo "${query_params[*]}")
-        pr_url="${url}/compare/${branch}?expand=1&${query_string}"
+        pr_url="${url}/compare/${target_ref}?expand=1&${query_string}"
+    elif [[ -n "$base" ]]; then
+        pr_url="${url}/compare/${target_ref}?expand=1"
     else
         pr_url="${url}/pull/new/${branch}"
     fi
 fi
 
-echo "Opening PR creation for '${branch}' in Chrome: ${pr_url}"
+if [[ -n "$base" ]]; then
+    echo "Opening PR creation for '${branch}' -> '${base}' in Chrome: ${pr_url}"
+else
+    echo "Opening PR creation for '${branch}' in Chrome: ${pr_url}"
+fi
 
 if [[ -d "/Applications/Google Chrome.app" ]]; then
     open -a "Google Chrome" "$pr_url"
