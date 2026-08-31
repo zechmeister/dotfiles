@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# pr: Open GitHub PR creation page for the current (or specified) branch in Google Chrome
+
+set -euo pipefail
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Error: Not a git repository ($PWD)" >&2
+    exit 1
+fi
+
+branch="${1:-$(git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || true)}"
+
+if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
+    echo "Error: Not currently on a valid git branch (detached HEAD)." >&2
+    exit 1
+fi
+
+remote_url=$(git remote get-url origin 2>/dev/null || git remote get-url "$(git remote | head -n1)" 2>/dev/null || true)
+
+if [[ -z "$remote_url" ]]; then
+    echo "Error: No git remote found for this repository." >&2
+    exit 1
+fi
+
+# Normalize SSH / HTTPS URLs to web base URL
+url="$remote_url"
+if [[ "$url" == git@* ]]; then
+    url="${url#git@}"
+    url="${url/:/\/}"
+    url="https://$url"
+elif [[ "$url" == ssh://git@* ]]; then
+    url="${url#ssh://git@}"
+    url="https://$url"
+fi
+
+# Strip user authentication from HTTP(S) URLs (e.g. https://token@github.com/...)
+url=$(echo "$url" | sed -E 's#https?://[^@]+@#https://#')
+
+# Strip trailing .git suffix
+url="${url%.git}"
+
+# Construct PR URL based on host
+if [[ "$url" == *gitlab* ]]; then
+    pr_url="${url}/-/merge_requests/new?merge_request%5Bsource_branch%5D=${branch}"
+elif [[ "$url" == *bitbucket* ]]; then
+    pr_url="${url}/pull-requests/new?source=${branch}"
+else
+    # Default: GitHub
+    pr_url="${url}/pull/new/${branch}"
+fi
+
+echo "Opening PR creation for '${branch}' in Chrome: ${pr_url}"
+
+if [[ -d "/Applications/Google Chrome.app" ]]; then
+    open -a "Google Chrome" "$pr_url"
+elif command -v open >/dev/null 2>&1; then
+    open "$pr_url"
+elif command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$pr_url"
+else
+    echo "$pr_url"
+fi
