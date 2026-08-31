@@ -2,7 +2,7 @@ onboarding = false
 
 [keys]
 prefix = "ctrl+w"
-edit_scrollback = "prefix+y"
+copy_mode = "prefix+y"
 next_agent = "prefix+o"
 next_workspace = "prefix+n"
 previous_workspace = "prefix+p"
