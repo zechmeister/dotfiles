@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "deny": [
+      "AskUserQuestion"
+    ]
+  },
+  "model": "claude-fable-5[1m]",
   "skillOverrides": {
     "design": "off",
     "artifact-design": "off",
@@ -37,14 +43,8 @@
       "effortLevel": "high"
     }
   },
-  "theme": "dark-daltonized",
   "skills": [
     "~/.agents/skills"
   ],
-  "permissions": {
-    "deny": [
-      "AskUserQuestion"
-    ]
-  },
-  "model": "claude-fable-5[1m]"
+  "theme": "dark-daltonized"
 }
