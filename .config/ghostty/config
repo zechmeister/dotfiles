@@ -8,3 +8,7 @@ font-size = 15
 cursor-style = block
 cursor-style-blink = false
 shell-integration-features = no-cursor
+
+macos-option-as-alt = left
+keybind = alt+backspace=text:\x1b\x7f
+
