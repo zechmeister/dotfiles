@@ -50,5 +50,10 @@
   "statusLine": {
     "type": "command",
     "command": "~/bin/claude-statusline"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
   }
 }
