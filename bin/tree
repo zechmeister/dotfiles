@@ -81,11 +81,9 @@ fi
 if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr status server >/dev/null 2>&1; }; then
   echo "Opening Herdr workspace '$worktree_label'..."
   if [ -n "${HERDR_WORKSPACE_ID:-}" ]; then
-    herdr worktree open --workspace "$HERDR_WORKSPACE_ID" --path "$worktree_path" --label "$worktree_label" --focus 2>/dev/null || \
-      herdr workspace create --label "$worktree_label" --cwd "$worktree_path" --focus
+    herdr worktree open --workspace "$HERDR_WORKSPACE_ID" --path "$worktree_path" --label "$worktree_label" --focus
   else
-    herdr worktree open --path "$worktree_path" --label "$worktree_label" --focus 2>/dev/null || \
-      herdr workspace create --label "$worktree_label" --cwd "$worktree_path" --focus
+    herdr worktree open --path "$worktree_path" --label "$worktree_label" --focus
   fi
 else
   cd "$worktree_path"
