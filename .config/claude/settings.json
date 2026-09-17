@@ -1,7 +1,20 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "deny": [
-      "AskUserQuestion"
+      "AskUserQuestion",
+      "ReportFindings",
+      "NotebookEdit",
+      "CronCreate",
+      "CronList",
+      "CronDelete",
+      "PushNotification",
+      "RemoteTrigger",
+      "EndConversation"
     ]
   },
   "model": "opus[1m]",
@@ -35,8 +48,13 @@
       }
     ]
   },
+  "feedbackDrafts": "off",
   "disableWorkflows": true,
   "enableArtifact": false,
+  "statusLine": {
+    "type": "command",
+    "command": "~/bin/claude-statusline"
+  },
   "alwaysThinkingEnabled": true,
   "modelSettings": {
     "claude-opus-5": {
@@ -46,14 +64,5 @@
   "theme": "dark-daltonized",
   "skills": [
     "~/.agents/skills"
-  ],
-  "statusLine": {
-    "type": "command",
-    "command": "~/bin/claude-statusline"
-  },
-  "attribution": {
-    "commit": "",
-    "pr": "",
-    "sessionUrl": false
-  }
+  ]
 }
