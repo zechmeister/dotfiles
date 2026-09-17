@@ -40,6 +40,7 @@ ln -sf $PWD/skills ~/.agents/skills
 
 # CLI Tools
 mkdir -p ~/bin
+ln -sf $PWD/bin/claude-statusline ~/bin/claude-statusline
 ln -sf $PWD/bin/gh-open ~/bin/gh-open
 ln -sf $PWD/bin/meta ~/bin/meta
 ```

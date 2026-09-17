@@ -4,7 +4,7 @@
       "AskUserQuestion"
     ]
   },
-  "model": "claude-fable-5[1m]",
+  "model": "opus[1m]",
   "skillOverrides": {
     "design": "off",
     "artifact-design": "off",
@@ -43,8 +43,12 @@
       "effortLevel": "high"
     }
   },
+  "theme": "dark-daltonized",
   "skills": [
     "~/.agents/skills"
   ],
-  "theme": "dark-daltonized"
+  "statusLine": {
+    "type": "command",
+    "command": "~/bin/claude-statusline"
+  }
 }
