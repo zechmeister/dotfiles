@@ -17,6 +17,7 @@ repo_name=$(basename "$repo_root")
 
 case "$arg" in
   *[!0-9]*)
+    worktree_label="$arg"
     worktree_path="$repo_root/../${repo_name}-worktrees/$arg"
     if ! git show-ref --quiet "refs/heads/$arg"; then
       echo "Branch '$arg' doesn't exist. Creating from HEAD..."
@@ -26,6 +27,7 @@ case "$arg" in
     git worktree add "$worktree_path" "$arg"
     ;;
   *)
+    worktree_label="pr-$arg"
     origin_slug=$(git remote get-url origin | sed -E 's#(git@[^:]+:|https?://[^/]+/)##; s#\.git$##')
     worktree_path="$repo_root/../${repo_name}-worktrees/pr-$arg"
     
@@ -77,8 +79,14 @@ fi
 
 # Open in Herdr workspace if running in or connected to Herdr
 if command -v herdr >/dev/null 2>&1 && { [ "${HERDR_ENV:-0}" = "1" ] || herdr status server >/dev/null 2>&1; }; then
-  echo "Opening Herdr workspace '$arg'..."
-  herdr workspace create --label "$arg" --cwd "$worktree_path" --focus
+  echo "Opening Herdr workspace '$worktree_label'..."
+  if [ -n "${HERDR_WORKSPACE_ID:-}" ]; then
+    herdr worktree open --workspace "$HERDR_WORKSPACE_ID" --path "$worktree_path" --label "$worktree_label" --focus 2>/dev/null || \
+      herdr workspace create --label "$worktree_label" --cwd "$worktree_path" --focus
+  else
+    herdr worktree open --path "$worktree_path" --label "$worktree_label" --focus 2>/dev/null || \
+      herdr workspace create --label "$worktree_label" --cwd "$worktree_path" --focus
+  fi
 else
   cd "$worktree_path"
   exec "${SHELL:-/bin/sh}"
