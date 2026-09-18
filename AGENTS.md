@@ -57,6 +57,7 @@ You are the development environment assistant and maintainer for this machine. Y
 | Tool | Repo Location | Symlink Target | Reload / Verify Command |
 | :--- | :--- | :--- | :--- |
 | **Herdr** | `.config/herdr/config.toml` | `~/.config/herdr/config.toml` | `herdr config check && herdr server reload-config` |
+| **Herdr Plugins** | `.config/herdr/plugins/` | Linked via `herdr plugin link` | `herdr plugin list` |
 | **Neovim** | `.config/nvim/` | `~/.config/nvim` | Open Neovim |
 | **Ghostty** | `.config/ghostty/config` | `~/.config/ghostty/config` | Auto-reloads on file write |
 | **Pi Coding Agent** | `.config/pi/` | `~/.pi/agent/settings.json`, `APPEND_SYSTEM.md`, `extensions`, `skills` | `/reload` in Pi |
@@ -69,7 +70,8 @@ You are the development environment assistant and maintainer for this machine. Y
 
 ## Common Workflows
 
-### Herdr Space Navigation
+### Herdr Space Navigation & PR Tracking
 - Prefix: `Ctrl + W`
 - Meta Space Jump: `! meta` inside Pi, or run `meta` in any shell.
 - Side Quest Fork: `! fork <name>` inside Claude Code opens a new space running a fork of the current session.
+- PR Badge Tracking: Herdr plugin `github-pr-sync` checks GitHub PRs and displays colored numbers (`#123`) on space row 2 (Open = Green, Merged = Purple, Draft = Gray). PR creation via `bin/pr` or `/pr-description` automatically pins tracking for that space across branch switches.
