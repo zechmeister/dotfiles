@@ -1,0 +1,27 @@
+id = "github-pr-sync"
+name = "GitHub PR Sync"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Syncs GitHub PR status and numbers to Herdr workspace metadata"
+platforms = ["macos", "linux"]
+
+[[startup]]
+command = ["bash", "startup.sh"]
+
+[[actions]]
+id = "sync"
+title = "Sync GitHub PRs"
+contexts = ["workspace"]
+command = ["bash", "sync.sh"]
+
+[[events]]
+on = "workspace.created"
+command = ["bash", "sync.sh"]
+
+[[events]]
+on = "worktree.created"
+command = ["bash", "sync.sh"]
+
+[[events]]
+on = "worktree.opened"
+command = ["bash", "sync.sh"]
