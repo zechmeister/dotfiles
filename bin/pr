@@ -147,6 +147,33 @@ url=$(echo "$url" | sed -E 's#https?://[^@]+@#https://#')
 # Strip trailing .git suffix
 url="${url%.git}"
 
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+
+# Track PR branch in Herdr workspace if running inside Herdr
+if [[ -n "$repo_root" && -n "$branch" ]] && command -v herdr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    tracked_file="$HOME/.config/herdr/github-pr-sync.json"
+    ws_id="${HERDR_WORKSPACE_ID:-}"
+    if [[ -z "$ws_id" ]]; then
+        ws_id=$(herdr pane list 2>/dev/null | jq -r --arg pwd "$PWD" '
+            .result.panes // [] |
+            map(select(.foreground_cwd == $pwd or .cwd == $pwd)) |
+            .[0].workspace_id // empty
+        ' 2>/dev/null || true)
+    fi
+    if [[ -n "$ws_id" ]]; then
+        mkdir -p "$(dirname "$tracked_file")"
+        current_json="{}"
+        [[ -f "$tracked_file" ]] && current_json=$(cat "$tracked_file" 2>/dev/null || echo "{}")
+        echo "$current_json" | jq --arg ws "$ws_id" --arg b "$branch" --arg r "$repo_root" '
+            .[$ws] = { branch: $b, repo_root: $r, updated_at: (now | todate) }
+        ' > "$tracked_file.tmp" 2>/dev/null && mv "$tracked_file.tmp" "$tracked_file"
+        
+        if command -v herdr-pr-sync >/dev/null 2>&1; then
+            herdr-pr-sync >/dev/null 2>&1 &
+        fi
+    fi
+fi
+
 query_params=()
 if [[ -n "$title" ]]; then
     encoded_title=$(jq -rn --arg v "$title" '$v|@uri')
