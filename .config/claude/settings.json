@@ -41,13 +41,13 @@
       }
     ]
   },
-  "feedbackDrafts": "off",
   "disableWorkflows": true,
   "enableArtifact": false,
   "statusLine": {
     "type": "command",
     "command": "~/bin/claude-statusline"
   },
+  "feedbackDrafts": "off",
   "alwaysThinkingEnabled": true,
   "modelSettings": {
     "claude-opus-5": {

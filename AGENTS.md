@@ -72,3 +72,4 @@ You are the development environment assistant and maintainer for this machine. Y
 ### Herdr Space Navigation
 - Prefix: `Ctrl + W`
 - Meta Space Jump: `! meta` inside Pi, or run `meta` in any shell.
+- Side Quest Fork: `! fork <name>` inside Claude Code opens a new space running a fork of the current session.

@@ -43,6 +43,7 @@ mkdir -p ~/bin
 ln -sf $PWD/bin/claude-statusline ~/bin/claude-statusline
 ln -sf $PWD/bin/gh-open ~/bin/gh-open
 ln -sf $PWD/bin/meta ~/bin/meta
+ln -sf $PWD/bin/fork ~/bin/fork
 ```
 
 ### 3. Agent Skills Architecture

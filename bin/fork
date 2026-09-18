@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# fork: Open a new Herdr space running a fork of the current Claude Code session
+
+set -euo pipefail
+
+name="${1:-}"
+if [[ -z "$name" ]]; then
+    echo "Usage: fork <name>"
+    exit 1
+fi
+
+if [[ -z "${CLAUDE_CODE_SESSION_ID:-}" ]]; then
+    echo "Not inside a Claude Code session. Run as '! fork <name>'."
+    exit 1
+fi
+
+pane_id=$(herdr workspace create --label "$name" --cwd "$PWD" --no-focus | jq -r '.result.root_pane.pane_id')
+herdr pane wait-output "$pane_id" --regex "➜|%|\\$|#" --timeout 5000 >/dev/null 2>&1 || sleep 1
+herdr pane run "$pane_id" "claude --resume $CLAUDE_CODE_SESSION_ID --fork-session --name $(printf '%q' "$name")" >/dev/null
+echo "✓ Forked session into space '$name' ($pane_id)"
