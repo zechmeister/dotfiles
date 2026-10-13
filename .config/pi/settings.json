@@ -1,5 +1,6 @@
 {
-  "lastChangelogVersion": "0.84.4",
+  "lastChangelogVersion": "1.2.0",
+  "tuiMode": "regular",
   "theme": "dark",
   "defaultProvider": "openrouter",
   "defaultModel": "google/gemini-3.7-flash",
